@@ -21,6 +21,13 @@ sourcedata: ## Download the source data for the project
 	echo 'Downloading source files (964 MB)'
 	curl https://download.codingdavinci.de/s/7rTJnf5dP3nKJYp/download -o sourcedata/anzeigen.zip
 
+datafolder: sourcedata ## Unzip downloaded data and put into right folder structure
+	unzip sourcedata/anzeigen.zip -d datafolder
+	mv datafolder/Kleinanzeigen\ aus\ dem\ \"Vorwärts\"/Mediendateien datafolder/images
+	mv datafolder/Kleinanzeigen\ aus\ dem\ \"Vorwärts\"/OCR/Alto-XML datafolder/xml
+	mv datafolder/Kleinanzeigen\ aus\ dem\ \"Vorwärts\"/Metadaten/vorwaerts-metadaten.csv datafolder/metadaten.csv
+	rm -rf datafolder/Kleinanzeigen\ aus\ dem\ \"Vorwärts\"/
+
 .PHONY:setup
 setup: sourcedata ## setting up the project
 
