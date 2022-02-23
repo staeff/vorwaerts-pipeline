@@ -28,6 +28,10 @@ datafolder: sourcedata ## Unzip downloaded data and put into right folder struct
 	mv datafolder/Kleinanzeigen\ aus\ dem\ \"Vorwärts\"/Metadaten/vorwaerts-metadaten.csv datafolder/metadaten.csv
 	rm -rf datafolder/Kleinanzeigen\ aus\ dem\ \"Vorwärts\"/
 
+.PHONY: rename_xml_files
+rename_xml_files: datafolder ## Rename xml files
+	$(PYTHON) rename_xml_files.py
+
 .PHONY:setup
 setup: sourcedata ## setting up the project
 
