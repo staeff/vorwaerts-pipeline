@@ -12,7 +12,7 @@ venv: ## Make a new virtual environment
 	python3 -m venv .venv
 
 .PHONY: install
-install: venv ## Make venv and install requirements
+install: ## Make venv and install requirements
 	$(VENV)/bin/pip install -r requirements.txt
 
 sourcedata: ## Download the source data for the project
@@ -33,8 +33,8 @@ rename_xml_files: datafolder ## Rename xml files
 	$(PYTHON) rename_xml_files.py
 
 .PHONY:setup
-setup: sourcedata ## setting up the project
+setup: sourcedata datafolder rename_xml_files ## setting up the project
 
 .PHONY: clean
-clean: ## Clean project folder
-	rm -rf $(VENV)
+clean: ## Remove material folder (scans and alto xml files)
+	rm -rf datafolder
