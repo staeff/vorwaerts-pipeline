@@ -3,7 +3,7 @@ from process_xml import generate_model_dict
 from process_xml import generate_page_fields
 from process_xml import get_page_dimensions
 from process_xml import get_adv_coords
-from process_xml import get_adv_text
+from process_xml import get_line_attributes
 from process_xml import extract_id
 from process_xml import NS
 
@@ -62,11 +62,11 @@ def test_get_page_dimensions():
     assert result['height'] == "5132"
     assert result['width'] == "3504"
 
-def test_get_adv_text():
+def test_get_line_attributes():
     tree = etree.fromstring(XML_TextLine_CONTENT)
 
-    result = get_adv_text(tree, NS)
-    assert result == 'Andreas, Alexanderstraße'
+    result = get_line_attributes(tree, NS)
+    assert result['text'] == 'Andreas, Alexanderstraße'
 
 def test_get_adv_coords():
     item_attrs = dict(HPOS='100',VPOS='200',WIDTH='22',HEIGHT='12')

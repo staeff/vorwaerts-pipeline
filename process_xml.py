@@ -41,7 +41,17 @@ def get_adv_coords(item_attrs):
     }
     return adv_coords
 
-def get_adv_text(xml_node, NS):
+def get_line_text(line):
+    # Check whether we have a hyphenated word. The full word
+    # is stored in SUBS_CONTENT
+    text = ''
+    if 'SUBS_TYPE' in line.attrib and 'HypPart1' in line.attrib.get('SUBS_TYPE'):
+        text = f"{line.attrib.get('SUBS_CONTENT')} "
+    if 'SUBS_CONTENT' not in line.attrib and 'SUBS_TYPE' not in line.attrib:
+        text = f"{line.attrib.get('CONTENT')} "
+    return text
+
+def get_line_attributes(xml_node, NS):
     """Get the text of an advertisement
     """
     text = ''
@@ -49,14 +59,12 @@ def get_adv_text(xml_node, NS):
     # Use XPath here to simplify?
     for lines in xml_node.findall(f'.//{NS}TextLine'):
         for line in lines.findall(f'.//{NS}String'):
-            # Check whether we have a hyphenated word. The full word
-            # is stored in SUBS_CONTENT
-            if 'SUBS_TYPE' in line.attrib and 'HypPart1' in line.attrib.get('SUBS_TYPE'):
-                text += f"{line.attrib.get('SUBS_CONTENT')} "
-            if 'SUBS_CONTENT' not in line.attrib and 'SUBS_TYPE' not in line.attrib:
-                text += f"{line.attrib.get('CONTENT')} "
+            text += get_line_text(line)
 
-    return text.strip()
+    line_attributes = {
+        "text": text.strip()
+    }
+    return line_attributes
 
 def extract_id(block_id_string):
     """Gets something block id string like Page1_Block1
@@ -90,21 +98,23 @@ if __name__ == "__main__":
         page_dict['fields'] = fields
         fixture.append(page_dict)
 
-        # Extract all textblocks elements
         textblocks = tree.findall(f".//{NS}TextBlock")
 
+        # A block constitutes one ad
         for block in textblocks:
-            # Increment numerical ID for advertising
+            # Increment numerical ID for an ad
             ad_id += 1
             ad_dict = generate_model_dict(ad_id, 'vorwaerts.classifiedad')
             # Assign nodes attributes dict to a var
             item_attrs = block.attrib
 
             block_id_string = item_attrs["ID"]
+            # Get attributes text and ocr cofidence for an ad
+            line_attributes = get_line_attributes(block, NS)
             ad_fields = get_adv_coords(item_attrs)
             ad_fields["block_id"] = extract_id(block_id_string)
             ad_fields["file_id"] = file_id_string
-            ad_fields["text"] = get_adv_text(block, NS)
+            ad_fields["text"] = line_attributes['text']
             ad_fields["newspaper_page"] = i
             ad_dict['fields'] = ad_fields
             anzeigen.append(ad_dict)
