@@ -9,6 +9,7 @@ def generate_model_dict(i, model):
     return dict(model=model, pk=i)
 
 def generate_page_fields(file_id_string):
+    """Generate the fields attribute for a page"""
     _, year, month, day, issue_number, page_number = file_id_string.split("-")
     fields = {
         "file_id": file_id_string,
@@ -18,13 +19,14 @@ def generate_page_fields(file_id_string):
     }
     return fields
 
-def get_page_coords(tree, NS):
+def get_page_dimensions(tree, NS):
+    """Get the height and width of a complete page."""
     page_elem = tree.find(f".//{NS}Page")
-    coords = {
+    dimensions = {
         'height': page_elem.attrib['HEIGHT'],
         'width': page_elem.attrib['WIDTH']
     }
-    return coords
+    return dimensions
 
 def get_adv_coords(item_attrs):
     """Gets a block node, either TextBlock
@@ -40,9 +42,10 @@ def get_adv_coords(item_attrs):
     return adv_coords
 
 def get_adv_text(xml_node, NS):
-    """copied from alto-tools
+    """Get the text of an advertisement
 
-    https://github.com/cneud/alto-tools
+        Code comes from:
+        https://github.com/cneud/alto-tools
     """
     text = ''
 
@@ -74,7 +77,7 @@ def extract_id(block_id_string):
 
 if __name__ == "__main__":
     cwd = Path(".")
-    xml_files = sorted(list(cwd.glob("xml/*.xml")))
+    xml_files = sorted(list(cwd.glob("datafolder/xml/*.xml")))
     fixture = []
     anzeigen = []
     j = 0
@@ -89,7 +92,7 @@ if __name__ == "__main__":
         # Generate dict with page
         page_dict = generate_model_dict(i, 'vorwaerts.newspaperpage')
         fields_dict = generate_page_fields(file_id_string)
-        coords_dict = get_page_coords(tree, NS)
+        coords_dict = get_page_dimensions(tree, NS)
         # Merge fields and coords dict
         fields = {**fields_dict, **coords_dict}
         page_dict['fields'] = fields

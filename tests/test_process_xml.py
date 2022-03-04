@@ -1,7 +1,7 @@
 from lxml import etree
 from process_xml import generate_model_dict
 from process_xml import generate_page_fields
-from process_xml import get_page_coords
+from process_xml import get_page_dimensions
 from process_xml import get_adv_coords
 from process_xml import get_adv_text
 from process_xml import extract_id
@@ -46,10 +46,10 @@ def test_generate_page_fields():
     assert fields["issue_number"] == 298
     assert fields["page_number"] == 12
 
-def test_get_page_coords():
+def test_get_page_dimensions():
     tree = etree.fromstring(XML_PAGE_COORDS)
 
-    result = get_page_coords(tree, NS)
+    result = get_page_dimensions(tree, NS)
     assert len(result) == 2
     assert result['height'] == "5132"
     assert result['width'] == "3504"

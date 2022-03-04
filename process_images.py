@@ -7,7 +7,13 @@ NS = "{http://www.loc.gov/standards/alto/ns-v2#}"
 
 
 def crop_image(img_obj, features, outpath):
-    """Extract the image by given coordinates"""
+    """Extract the image by given coordinates
+
+        feature is a dict.
+        feature["coords"] is a tuple with 4 numerical
+        values defining the position of the element on the
+        page.
+    """
     file_id = features["file_id"]
     block_id = features["block_id"]
     cropped = img_obj.crop(features["coords"])
