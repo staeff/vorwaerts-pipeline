@@ -52,6 +52,14 @@ def get_word(entry):
         text = f"{entry.attrib.get('CONTENT')} "
     return text
 
+def get_word_confidence(entry):
+    """Get the value of the attribute WC as float
+
+        Wc - word confidence. Value assigned by Abby OCR
+        measuring the quality of the recognition.
+    """
+    return float(entry.attrib.get('WC'))
+
 def get_line_attributes(xml_node, NS):
     """Get the text of an advertisement
     """
@@ -59,13 +67,16 @@ def get_line_attributes(xml_node, NS):
     ocr_confidence = 0
 
     # Use XPath here to simplify?
-    for lines in xml_node.findall(f'.//{NS}TextLine'):
-        string_entries = lines.findall(f'.//{NS}String')
-        for entry in string_entries:
-            words += get_word(entry)
+    string_entries = xml_node.findall(f'.//{NS}TextLine/{NS}String')
+    for entry in string_entries:
+        words += get_word(entry)
+        ocr_confidence += get_word_confidence(entry)
+
+    ocr_confidence = ocr_confidence/len(string_entries)
 
     line_attributes = {
-        "text": words.strip()
+        "text": words.strip(),
+        'ocr_confidence': ocr_confidence
     }
     return line_attributes
 
@@ -118,6 +129,7 @@ if __name__ == "__main__":
             ad_fields["block_id"] = extract_id(block_id_string)
             ad_fields["file_id"] = file_id_string
             ad_fields["text"] = line_attributes['text']
+            ad_fields['ocr_confidence'] = line_attributes['ocr_confidence']
             ad_fields["newspaper_page"] = i
             ad_dict['fields'] = ad_fields
             anzeigen.append(ad_dict)

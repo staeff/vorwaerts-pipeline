@@ -67,6 +67,7 @@ def test_get_line_attributes():
 
     result = get_line_attributes(tree, NS)
     assert result['text'] == 'Andreas, Alexanderstraße'
+    assert result['ocr_confidence'] == 0.6166666666666667
 
 def test_get_adv_coords():
     item_attrs = dict(HPOS='100',VPOS='200',WIDTH='22',HEIGHT='12')
