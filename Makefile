@@ -36,6 +36,16 @@ rename_xml_files: datafolder ## Rename xml files
 tests:
 	pytest
 
+.PHONY: json ## Run tests for python scripts
+json:
+	$(PYTHON) process_xml.py
+
+.PHONY: diff ## Run tests for python scripts
+diff:
+	jq . advertisments.json > new.json
+	jq . advertisments_base.json > old.json
+	vimdiff new.json old.json
+
 .PHONY:setup
 setup: sourcedata datafolder rename_xml_files ## setting up the project
 
