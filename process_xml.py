@@ -43,28 +43,19 @@ def get_adv_coords(item_attrs):
 
 def get_adv_text(xml_node, NS):
     """Get the text of an advertisement
-
-        Code comes from:
-        https://github.com/cneud/alto-tools
     """
     text = ''
 
     # Use XPath here to simplify?
     for lines in xml_node.findall(f'.//{NS}TextLine'):
         for line in lines.findall(f'.//{NS}String'):
-            # Check if there are no hyphenated words
-            # We dont want to have the CONTENT of nodes, that have the
-            # Attributes SUBS_CONTENT of SUBS_TYPE
-            if ('SUBS_CONTENT' not in line.attrib and 'SUBS_TYPE' not in line.attrib):
+            # Check whether we have a hyphenated word. The full word
+            # is stored in SUBS_CONTENT
+            if 'SUBS_TYPE' in line.attrib and 'HypPart1' in line.attrib.get('SUBS_TYPE'):
+                text += f"{line.attrib.get('SUBS_CONTENT')} "
+            if 'SUBS_CONTENT' not in line.attrib and 'SUBS_TYPE' not in line.attrib:
                 text += f"{line.attrib.get('CONTENT')} "
-            else:
-                # If a node has the Attribut SUBS_TYPE we check if
-                # it is HypPart1 and add its SUBCONTENT_VALUE to text/
-                if ('HypPart1' in line.attrib.get('SUBS_TYPE')):
-                    text += f"{line.attrib.get('SUBS_CONTENT')} "
-                    # This doesnt do shit!
-                    if ('HypPart2' in line.attrib.get('SUBS_TYPE')):
-                        pass
+
     return text.strip()
 
 def extract_id(block_id_string):
