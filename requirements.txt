@@ -1,2 +1,5 @@
 Pillow==9.0.1
 lxml==4.8.0
+pytest==6.2.5
+pytest-cov==3.0.0
+pytest-testdox==3.0.0
