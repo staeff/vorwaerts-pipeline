@@ -41,28 +41,31 @@ def get_adv_coords(item_attrs):
     }
     return adv_coords
 
-def get_line_text(line):
+def get_word(entry):
+    """Get the word contents of a String entry"""
     # Check whether we have a hyphenated word. The full word
     # is stored in SUBS_CONTENT
     text = ''
-    if 'SUBS_TYPE' in line.attrib and 'HypPart1' in line.attrib.get('SUBS_TYPE'):
-        text = f"{line.attrib.get('SUBS_CONTENT')} "
-    if 'SUBS_CONTENT' not in line.attrib and 'SUBS_TYPE' not in line.attrib:
-        text = f"{line.attrib.get('CONTENT')} "
+    if 'SUBS_TYPE' in entry.attrib and 'HypPart1' in entry.attrib.get('SUBS_TYPE'):
+        text = f"{entry.attrib.get('SUBS_CONTENT')} "
+    if 'SUBS_CONTENT' not in entry.attrib and 'SUBS_TYPE' not in entry.attrib:
+        text = f"{entry.attrib.get('CONTENT')} "
     return text
 
 def get_line_attributes(xml_node, NS):
     """Get the text of an advertisement
     """
-    text = ''
+    words = ''
+    ocr_confidence = 0
 
     # Use XPath here to simplify?
     for lines in xml_node.findall(f'.//{NS}TextLine'):
-        for line in lines.findall(f'.//{NS}String'):
-            text += get_line_text(line)
+        string_entries = lines.findall(f'.//{NS}String')
+        for entry in string_entries:
+            words += get_word(entry)
 
     line_attributes = {
-        "text": text.strip()
+        "text": words.strip()
     }
     return line_attributes
 
