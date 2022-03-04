@@ -71,7 +71,8 @@ if __name__ == "__main__":
     xml_files = sorted(list(cwd.glob("datafolder/xml/*.xml")))
     fixture = []
     anzeigen = []
-    j = 0
+    # counter to have a numerical ID for each ad.
+    ad_id = 0
 
     for i, xml_file in enumerate(xml_files, 1):
         # parse XML file into etree
@@ -93,10 +94,12 @@ if __name__ == "__main__":
         textblocks = tree.findall(f".//{NS}TextBlock")
 
         for block in textblocks:
+            # Increment numerical ID for advertising
+            ad_id += 1
+            ad_dict = generate_model_dict(ad_id, 'vorwaerts.classifiedad')
             # Assign nodes attributes dict to a var
             item_attrs = block.attrib
-            j += 1
-            ad_dict = generate_model_dict(j, 'vorwaerts.classifiedad')
+
             block_id_string = item_attrs["ID"]
             ad_fields = get_adv_coords(item_attrs)
             ad_fields["block_id"] = extract_id(block_id_string)
