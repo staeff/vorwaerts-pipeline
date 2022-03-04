@@ -32,6 +32,10 @@ datafolder: sourcedata ## Unzip downloaded data and put into right folder struct
 rename_xml_files: datafolder ## Rename xml files
 	$(PYTHON) rename_xml_files.py
 
+.PHONY: tests ## Run tests for python scripts
+tests:
+	pytest
+
 .PHONY:setup
 setup: sourcedata datafolder rename_xml_files ## setting up the project
 
