@@ -16,11 +16,19 @@ XML_PAGE_COORDS = """
 XML_TextLine_CONTENT = """
 <alto xmlns="http://www.loc.gov/standards/alto/ns-v2#">
   <TextLine>
-    <String CONTENT="Andreas,"/>
-    <String CONTENT="Alexander" SUBS_TYPE="HypPart1" SUBS_CONTENT="Alexanderstraße" />
+    <String CONTENT="Andreas," WC="0.75" />
+    <String
+      CONTENT="Alexander"
+      SUBS_TYPE="HypPart1"
+      SUBS_CONTENT="Alexanderstraße"
+      WC="0.50" />
   </TextLine>
   <TextLine>
-    <String CONTENT="straße" SUBS_TYPE="HypPart2" SUBS_CONTENT="Alexanderstraße" />
+    <String
+      CONTENT="straße"
+      SUBS_TYPE="HypPart2"
+      SUBS_CONTENT="Alexanderstraße"
+      WC="0.60" />
   </TextLine>
 </alto>
 """
