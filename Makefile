@@ -19,7 +19,7 @@ sourcedata: ## Download the source data for the project
 	@# -p silences the cmd, if folder already exists
 	@mkdir -p sourcedata
 	echo 'Downloading source files (964 MB)'
-	curl https://download.codingdavinci.de/s/7rTJnf5dP3nKJYp/download -o sourcedata/anzeigen.zip
+	@cp tmp/anzeigen-demo.zip sourcedata/anzeigen.zip
 
 datafolder: sourcedata ## Unzip downloaded data and put into right folder structure
 	unzip sourcedata/anzeigen.zip -d datafolder
