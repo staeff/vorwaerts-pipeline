@@ -1,3 +1,4 @@
+from utils import create_path
 from pathlib import Path
 from lxml import etree
 import json
@@ -134,10 +135,12 @@ if __name__ == "__main__":
             ad_dict['fields'] = ad_fields
             anzeigen.append(ad_dict)
 
+    outpath = create_path('datafolder/json')
+
     # Write pages data to fixture file
-    with open("pages.json", "w") as outfile:
+    with open(f"{outpath}/pages.json", "w") as outfile:
         json.dump(fixture, outfile)
 
     # Write advertisement data fo fixture
-    with open("advertisments.json", "w") as outfile:
+    with open(f"{outpath}/advertisments.json", "w") as outfile:
         json.dump(anzeigen, outfile)

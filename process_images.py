@@ -35,7 +35,7 @@ def get_coordinates(fields):
 
 
 if __name__ == "__main__":
-    with open("advertisments.json", "r") as infile:
+    with open("datafolder/json/advertisments.json", "r") as infile:
         data = json.load(infile)
 
     for entry in data:
