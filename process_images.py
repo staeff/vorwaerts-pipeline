@@ -1,7 +1,6 @@
-from pathlib import Path
+from utils import create_path
 from PIL import Image
 import json
-import os
 
 
 def crop_image(img_obj, features, outpath):
@@ -35,22 +34,6 @@ def get_coordinates(fields):
     return (x0, y0, x1, y1)
 
 
-def create_path(file_id):
-    """Create a folder for every Page
-
-    e.g. /vw-1891-01-04-3-004/
-    To organize the images of ads, that each is
-    split into.
-    """
-    cwd = Path.cwd()
-    path = f"images/{file_id}/"
-    dirname = cwd / path
-    if not dirname.exists():
-        print(f"Creating {dirname}")
-        os.makedirs(dirname, exist_ok=True)
-    return dirname
-
-
 if __name__ == "__main__":
     with open("advertisments.json", "r") as infile:
         data = json.load(infile)
@@ -64,7 +47,10 @@ if __name__ == "__main__":
             "file_id": file_id,
         }
 
-        outpath = create_path(file_id)
+
+        # Create a folder for every Newspaper page
+        # e.g. /vw-1891-01-04-3-004/ to contain the subelements
+        outpath = create_path(f"images/{file_id}/")
 
         # Turn original image into a PIL obj
         # XXX Do we have to do this each iteration?
