@@ -32,22 +32,29 @@ datafolder: sourcedata ## Unzip downloaded data and put into right folder struct
 rename_xml_files: datafolder ## Rename xml files
 	$(PYTHON) rename_xml_files.py
 
-.PHONY: tests ## Run tests for python scripts
-tests:
-	pytest
-
-.PHONY: json ## Run tests for python scripts
-json:
+.PHONY: process_xml
+process_xml: ## Extract data from ALTO xml to json
 	$(PYTHON) process_xml.py
 
-.PHONY: diff ## Run tests for python scripts
-diff:
+.PHONY: process_images
+process_images: ## Cut the pages into smaller images
+	$(PYTHON) process_images.py
+
+.PHONY:setup
+setup: venv ## setting up the project
+
+.PHONY: pipeline
+pipeline: sourcedata datafolder rename_xml_files process_xml ## setting up the project
+
+.PHONY: tests
+tests: ## Run tests for python scripts
+	pytest
+
+.PHONY: diff
+diff: ## Run tests for python scripts
 	jq . advertisments.json > new.json
 	jq . advertisments_base.json > old.json
 	vimdiff new.json old.json
-
-.PHONY:setup
-setup: sourcedata datafolder rename_xml_files ## setting up the project
 
 .PHONY: clean
 clean: ## Remove material folder (scans and alto xml files)
