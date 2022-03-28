@@ -68,7 +68,6 @@ def get_line_attributes(xml_node, NS):
     words = ''
     ocr_confidence = 0
 
-    # Use XPath here to simplify?
     string_entries = xml_node.findall(f'.//{NS}TextLine/{NS}String')
     for entry in string_entries:
         words += get_word(entry)
