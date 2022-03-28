@@ -1,4 +1,5 @@
 from utils import create_path
+from utils import get_s3_bucket
 from pathlib import Path
 from lxml import etree
 import json
@@ -88,7 +89,6 @@ def extract_id(block_id_string):
     """
     return block_id_string.replace("Page1_Block", "")
 
-
 if __name__ == "__main__":
     cwd = Path(".")
     xml_files = sorted(list(cwd.glob("datafolder/xml/*.xml")))
@@ -135,12 +135,15 @@ if __name__ == "__main__":
             ad_dict['fields'] = ad_fields
             anzeigen.append(ad_dict)
 
-    outpath = create_path('datafolder/json')
+    # Store data on s3 for the web app to pick it up
+    s3bucket = get_s3_bucket('vorwaerts-data-demo')
+    s3bucket.put_object(Key='vorwaerts_ads_data.json', Body=json.dumps(anzeigen))
+    s3bucket.put_object(Key='vorwaerts_pages_data.json', Body=json.dumps(fixture))
 
-    # Write pages data to fixture file
+    # store data locally
+    outpath = create_path('datafolder/json')
     with open(f"{outpath}/pages.json", "w") as outfile:
         json.dump(fixture, outfile)
 
-    # Write advertisement data fo fixture
     with open(f"{outpath}/advertisments.json", "w") as outfile:
         json.dump(anzeigen, outfile)
