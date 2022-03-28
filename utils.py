@@ -1,4 +1,7 @@
 from pathlib import Path
+import logging
+import boto3
+from botocore.exceptions import ClientError
 import os
 
 def create_path(path_name):
@@ -11,3 +14,8 @@ def create_path(path_name):
         print(f"Creating {dirname}")
         os.makedirs(dirname, exist_ok=True)
     return dirname
+
+def get_s3_bucket(bucket_name):
+    """Connect to a s3 bucket for further operations"""
+    s3 = boto3.resource('s3')
+    return s3.Bucket(bucket_name)
