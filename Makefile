@@ -60,3 +60,4 @@ diff: ## Run tests for python scripts
 clean: ## Remove material folder (scans and alto xml files)
 	rm -rf sourcedata
 	rm -rf datafolder
+	rm -rf images
