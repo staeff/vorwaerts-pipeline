@@ -4,7 +4,7 @@ import multiprocessing as mp
 import json
 
 
-def crop_image(img_obj, features, outpath):
+def crop_image(img_obj, features):
     """Extract the image by given coordinates
 
     feature is a dict.
@@ -15,7 +15,7 @@ def crop_image(img_obj, features, outpath):
     file_id = features["file_id"]
     block_id = features["block_id"]
     cropped = img_obj.crop(features["coords"])
-    cropped.save(outpath / f"{file_id}-{block_id}.jpg")
+    cropped.save(f"images/ad_images/{file_id}-{block_id}.jpg")
 
 
 def extract_id(block_id_string):
@@ -44,19 +44,17 @@ def process_entry(entry):
         "file_id": file_id,
     }
 
-    # Create a folder for every Newspaper page
-    # e.g. /vw-1891-01-04-3-004/ to contain the subelements
-    outpath = create_path(f"images/{file_id}/")
-
     # Turn original image into a PIL obj
-    # XXX Do we have to do this each iteration?
     img_obj = Image.open(f"datafolder/images/{file_id}.jpg")
-    crop_image(img_obj, features, outpath)
+    crop_image(img_obj, features)
 
 if __name__ == "__main__":
 
     with open("datafolder/json/advertisments.json", "r") as infile:
         data = json.load(infile)
+
+    # Create folder for the images if needed
+    create_path(f"images/ad_images")
 
     pool = mp.Pool(mp.cpu_count())
     pool.map(process_entry, [entry for entry in data])
