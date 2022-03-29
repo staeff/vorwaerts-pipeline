@@ -1,10 +1,15 @@
 from utils import create_path
 from utils import get_s3_bucket
 from pathlib import Path
+from dotenv import load_dotenv
 from lxml import etree
 import json
+import os
 
 NS = "{http://www.loc.gov/standards/alto/ns-v2#}"
+
+load_dotenv()
+AWS_DATA_BUCKET = os.getenv('AWS_DATA_BUCKET')
 
 def generate_model_dict(i, model):
     """Generate a dictionary with that represents a minimal page instance"""
@@ -135,7 +140,7 @@ if __name__ == "__main__":
             anzeigen.append(ad_dict)
 
     # Store data on s3 for the web app to pick it up
-    s3bucket = get_s3_bucket('vorwaerts-data-demo')
+    s3bucket = get_s3_bucket(AWS_DATA_BUCKET)
     s3bucket.put_object(Key='vorwaerts_ads_data.json', Body=json.dumps(anzeigen))
     s3bucket.put_object(Key='vorwaerts_pages_data.json', Body=json.dumps(fixture))
 
