@@ -41,7 +41,7 @@ process_images: ## Cut the pages into smaller images
 	$(PYTHON) process_images.py
 
 .PHONY:setup
-setup: venv ## setting up the project
+setup: venv install ## setting up the project
 
 .PHONY: pipeline
 pipeline: sourcedata datafolder rename_xml_files process_xml process_images ## setting up the project
