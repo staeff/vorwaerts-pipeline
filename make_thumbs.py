@@ -1,6 +1,6 @@
 from PIL import Image
 from pathlib import Path
-#from utils import create_path
+from utils import create_path
 from utils import get_s3_bucket
 import io
 
@@ -17,21 +17,23 @@ def process_image(image):
         print(f"processing file {image.name} done...")
 
         im.thumbnail(scansize)
+        im.save(output_img_path / "scans" / image.name, im.format)
         in_mem_scan = io.BytesIO()
-        #im.save(output_img_path / "scans" / image.name, im.format)
         im.save(in_mem_scan, im.format)
         in_mem_scan.seek(0)
-        s3bucket.put_object(Key=f"scans/{image.name}", Body=in_mem_scan)
+        s3msg = s3bucket.put_object(Key=f"scans/{image.name}", Body=in_mem_scan)
+        print(s3msg)
 
         im.thumbnail(thumbsize)
+        im.save(output_img_path / "thumbnails" / image.name, im.format)
         in_mem_thumb = io.BytesIO()
-        #im.save(output_img_path / "thumbnails" / image.name, im.format)
         im.save(in_mem_thumb, im.format)
         in_mem_scan.seek(0)
-        s3bucket.put_object(Key=f"thumbnails/{image.name}", Body=in_mem_thumb)
+        s3msg = s3bucket.put_object(Key=f"thumbnails/{image.name}", Body=in_mem_thumb)
+        print(s3msg)
 
-#create_path('images/scans')
-#create_path('images/thumbnails')
+create_path('images/scans')
+create_path('images/thumbnails')
 s3bucket = get_s3_bucket('vorwaerts-images')
 
 for image in images:
