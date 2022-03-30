@@ -8,7 +8,8 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-AWS_AD_IMAGES_BUCKET = os.getenv('AWS_AD_IMAGES_BUCKET')
+AWS_AD_IMAGES_BUCKET = os.getenv("AWS_AD_IMAGES_BUCKET")
+
 
 def crop_image(img_obj, features, s3bucket):
     """Extract the image by given coordinates
@@ -28,7 +29,9 @@ def crop_image(img_obj, features, s3bucket):
     in_mem_img = io.BytesIO()
     cropped.save(in_mem_img, img_obj.format)
     in_mem_img.seek(0)
-    s3msg = s3bucket.put_object(Key=image_name, Body=in_mem_img)
+    s3msg = s3bucket.put_object(
+        Key=image_name, Body=in_mem_img, ContentType="image/jpeg"
+    )
     print(s3msg)
 
 
@@ -48,6 +51,7 @@ def get_coordinates(fields):
     y1 = int(fields["height"]) + y0
     return (x0, y0, x1, y1)
 
+
 def process_entry(entry):
     """Process a single entry to transform an image"""
     fields = entry["fields"]
@@ -64,6 +68,7 @@ def process_entry(entry):
     # Turn original image into a PIL obj
     img_obj = Image.open(f"datafolder/images/{file_id}.jpg")
     crop_image(img_obj, features, s3bucket)
+
 
 if __name__ == "__main__":
 
