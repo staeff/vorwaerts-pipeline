@@ -1,5 +1,4 @@
 VENV := ./.venv
-APP_DIR := .
 BIN := $(VENV)/bin
 PYTHON := $(BIN)/python
 
@@ -14,6 +13,9 @@ venv: ## Make a new virtual environment
 .PHONY: install
 install: ## Make venv and install requirements
 	$(VENV)/bin/pip install -r requirements.txt
+
+.PHONY:setup
+setup: venv install ## setting Python for the project
 
 sourcedata: ## Download the source data for the project
 	@# -p silences the cmd, if folder already exists
@@ -44,24 +46,17 @@ process_scans: ## Create thumbnail and smaller version of scanned page
 process_ads: ## Create images of single advertisments elements
 	$(PYTHON) process_ads.py
 
-.PHONY:setup
-setup: venv install ## setting up the project
-
 .PHONY: pipeline
 pipeline: sourcedata datafolder rename_xml_files process_xml process_scans process_ads  ## run the data transformation
+
+.PHONY: full-pipeline
+full-pipeline: setup pipeline  ## run the data transformation
 
 .PHONY: tests
 tests: ## Run tests for python scripts
 	pytest
 
-.PHONY: diff
-diff: ## Run tests for python scripts
-	jq . advertisments.json > new.json
-	jq . advertisments_base.json > old.json
-	vimdiff new.json old.json
-
 .PHONY: clean
 clean: ## Remove material folder (scans and alto xml files)
-	rm -rf sourcedata
 	rm -rf datafolder
 	rm -rf output
