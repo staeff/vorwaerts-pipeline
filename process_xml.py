@@ -145,7 +145,7 @@ if __name__ == "__main__":
     s3bucket.put_object(Key='vorwaerts_pages_data.json', Body=json.dumps(fixture))
 
     # store data locally
-    outpath = create_path('datafolder/json')
+    outpath = create_path('output/json')
     with open(f"{outpath}/pages.json", "w") as outfile:
         json.dump(fixture, outfile)
 
