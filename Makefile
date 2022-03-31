@@ -17,7 +17,7 @@ install: ## Make venv and install requirements
 .PHONY:setup
 setup: venv install ## setting Python for the project
 
-sourcedata: ## Download the source data for the project
+sourcedata/anzeigen.zip: ## Download the source data for the project
 	@# -p silences the cmd, if folder already exists
 	@mkdir -p sourcedata
 	echo 'Downloading source files (964 MB)'
@@ -47,7 +47,7 @@ process_ads: ## Create images of single advertisments elements
 	$(PYTHON) process_ads.py
 
 .PHONY: pipeline
-pipeline: sourcedata datafolder rename_xml_files process_xml process_scans process_ads  ## run the data transformation
+pipeline: sourcedata/anzeigen.zip datafolder rename_xml_files process_xml process_scans process_ads  ## run the data transformation
 
 .PHONY: full-pipeline
 full-pipeline: setup pipeline  ## run the data transformation
