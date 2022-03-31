@@ -8,14 +8,13 @@ scansize = (1320, 1320)
 thumbsize = (400, 400)
 cwd = Path(".")
 images = cwd.glob("datafolder/images/*.jpg")
-output_img_path = Path("images")
 
 
 def process_image(image):
     """Create smaller version and thumbnail of original scan"""
     with Image.open(image) as im:
 
-        print(f"processing file {image.name} done...")
+        print(f"processing file {image.name}")
 
         im.thumbnail(scansize)
         im.save(output_img_path / "scans" / image.name, im.format)
@@ -37,10 +36,11 @@ def process_image(image):
         )
         print(s3msg)
 
+if __name__ == '__main__':
+    output_img_path = create_path("output/images")
+    create_path("output/images/scans")
+    create_path("output/images/thumbnails")
+    s3bucket = get_s3_bucket("vorwaerts-images")
 
-create_path("images/scans")
-create_path("images/thumbnails")
-s3bucket = get_s3_bucket("vorwaerts-images")
-
-for image in images:
-    process_image(image)
+    for image in images:
+        process_image(image)
