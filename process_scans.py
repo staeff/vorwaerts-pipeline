@@ -3,6 +3,11 @@ from pathlib import Path
 from utils import create_path
 from utils import get_s3_bucket
 import io
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+AWS_IMAGES_BUCKET = os.getenv("AWS_IMAGES_BUCKET")
 
 scansize = (1320, 1320)
 thumbsize = (400, 400)
@@ -40,7 +45,7 @@ if __name__ == '__main__':
     output_img_path = create_path("output/images")
     create_path("output/images/scans")
     create_path("output/images/thumbnails")
-    s3bucket = get_s3_bucket("vorwaerts-images")
+    s3bucket = get_s3_bucket(AWS_IMAGES_BUCKET)
 
     for image in images:
         process_image(image)
