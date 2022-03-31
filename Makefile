@@ -36,15 +36,19 @@ rename_xml_files: datafolder ## Rename xml files
 process_xml: ## Extract data from ALTO xml to json
 	$(PYTHON) process_xml.py
 
-.PHONY: process_images
-process_images: ## Cut the pages into smaller images
-	$(PYTHON) process_images.py
+.PHONY: process_scans
+process_scans: ## Create thumbnail and smaller version of scanned page
+	$(PYTHON) process_scans.py
+
+.PHONY: process_ads
+process_ads: ## Create images of single advertisments elements
+	$(PYTHON) process_ads.py
 
 .PHONY:setup
 setup: venv install ## setting up the project
 
 .PHONY: pipeline
-pipeline: sourcedata datafolder rename_xml_files process_xml process_images ## setting up the project
+pipeline: sourcedata datafolder rename_xml_files process_xml process_scans process_ads  ## run the data transformation
 
 .PHONY: tests
 tests: ## Run tests for python scripts
@@ -60,4 +64,4 @@ diff: ## Run tests for python scripts
 clean: ## Remove material folder (scans and alto xml files)
 	rm -rf sourcedata
 	rm -rf datafolder
-	rm -rf images
+	rm -rf output
