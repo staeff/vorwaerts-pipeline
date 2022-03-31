@@ -22,7 +22,7 @@ def crop_image(img_obj, features, s3bucket):
     file_id = features["file_id"]
     block_id = features["block_id"]
     image_name = f"{file_id}-{block_id}.jpg"
-    image_path = f"images/ad_images/{image_name}"
+    image_path = f"output/images/ad_images/{image_name}"
     cropped = img_obj.crop(features["coords"])
 
     cropped.save(image_path, img_obj.format)
@@ -62,7 +62,6 @@ def process_entry(entry):
         "file_id": file_id,
     }
 
-    #
     s3bucket = get_s3_bucket(AWS_AD_IMAGES_BUCKET)
 
     # Turn original image into a PIL obj
@@ -72,11 +71,11 @@ def process_entry(entry):
 
 if __name__ == "__main__":
 
-    with open("datafolder/json/advertisments.json", "r") as infile:
+    with open("output/json/advertisments.json", "r") as infile:
         data = json.load(infile)
 
     # Create folder for the images if needed
-    create_path(f"images/ad_images")
+    create_path(f"output/images/ad_images")
 
     pool = mp.Pool(mp.cpu_count())
     pool.map(process_entry, [entry for entry in data])
