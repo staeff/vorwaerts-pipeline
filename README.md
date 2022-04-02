@@ -6,9 +6,13 @@ The idea of the project has been developed during the [{COD1NG DA V1NC1} NIEDER.
 ## Usage
 
 Run `make full-pipeline` to setup the Python dependencies for the project, download the data and process it.
-*The zip file with the original data has a size of 964 MB. Therefore the first download step will take some time*
+
+*The original data is 964 MB! Downloading and processing will take some time. For just trying out the workflow replace `https://download.codingdavinci.de/s/7rTJnf5dP3nKJYp/download` with `https://220402irzzlazozxplo.nextcloud.hosting.zone/s/qYb7LRyrXGWMDkp/download/anzeigen-demo.zip` in line 24 of the `Makefile`.*
+
 The result is uploaded to Amazon s3 for the web app to read it from there.
+
 *For this requires a working aws configuration in the environment it is executed and the bucket-names set up in `.env`.*
+
 Additionally the pipeline creates a `output.zip` file, that can be extracted to local installation of the web app for developement.
 
 Use `make help` to see which single command have been implemented and run then as necessary.
