@@ -4,10 +4,11 @@ from utils import create_path
 from utils import get_s3_bucket
 import io
 from dotenv import load_dotenv
+from distutils.util import strtobool
 import os
 
 load_dotenv()
-USE_AWS = os.getenv("USE_AWS", False)
+USE_AWS = strtobool(os.getenv("USE_AWS", "False"))
 AWS_IMAGES_BUCKET = os.getenv("AWS_IMAGES_BUCKET")
 
 

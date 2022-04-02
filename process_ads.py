@@ -1,6 +1,7 @@
 from utils import create_path
 from utils import get_s3_bucket
 from PIL import Image
+from distutils.util import strtobool
 import io
 import multiprocessing as mp
 import json
@@ -8,7 +9,7 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-USE_AWS = os.getenv("USE_AWS", False)
+USE_AWS = strtobool(os.getenv("USE_AWS", "False"))
 AWS_AD_IMAGES_BUCKET = os.getenv("AWS_AD_IMAGES_BUCKET")
 
 
