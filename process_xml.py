@@ -2,6 +2,7 @@ from utils import create_path
 from utils import get_s3_bucket
 from pathlib import Path
 from dotenv import load_dotenv
+from distutils.util import strtobool
 from lxml import etree
 import json
 import os
@@ -10,6 +11,7 @@ NS = "{http://www.loc.gov/standards/alto/ns-v2#}"
 
 load_dotenv()
 AWS_DATA_BUCKET = os.getenv("AWS_DATA_BUCKET")
+USE_AWS = strtobool(os.getenv("USE_AWS", "False"))
 
 
 def generate_model_dict(i, model):
@@ -145,9 +147,10 @@ if __name__ == "__main__":
             anzeigen.append(ad_dict)
 
     # Store data on s3 for the web app to pick it up
-    s3bucket = get_s3_bucket(AWS_DATA_BUCKET)
-    s3bucket.put_object(Key="vorwaerts_ads_data.json", Body=json.dumps(anzeigen))
-    s3bucket.put_object(Key="vorwaerts_pages_data.json", Body=json.dumps(fixture))
+    if USE_AWS:
+        s3bucket = get_s3_bucket(AWS_DATA_BUCKET)
+        s3bucket.put_object(Key="vorwaerts_ads_data.json", Body=json.dumps(anzeigen))
+        s3bucket.put_object(Key="vorwaerts_pages_data.json", Body=json.dumps(fixture))
 
     # store data locally
     outpath = create_path("output/json")
