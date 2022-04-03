@@ -1,12 +1,13 @@
-from pathlib import Path
-import boto3
-import os
-import sys
-from dotenv import load_dotenv
-from distutils.util import strtobool
 import csv
+import os
 import shutil
+import sys
+from distutils.util import strtobool
+from pathlib import Path
 from zipfile import ZipFile
+
+import boto3
+from dotenv import load_dotenv
 
 load_dotenv()
 USE_AWS = strtobool(os.getenv("USE_AWS", "False"))

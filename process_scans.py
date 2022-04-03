@@ -1,11 +1,12 @@
-from PIL import Image
-from pathlib import Path
-from utils import create_path
-from utils import get_s3_bucket
 import io
-from dotenv import load_dotenv
-from distutils.util import strtobool
 import os
+from distutils.util import strtobool
+from pathlib import Path
+
+from dotenv import load_dotenv
+from PIL import Image
+
+from utils import create_path, get_s3_bucket
 
 load_dotenv()
 USE_AWS = strtobool(os.getenv("USE_AWS", "False"))

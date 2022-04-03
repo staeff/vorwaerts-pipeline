@@ -1,11 +1,12 @@
-from utils import create_path
-from utils import get_s3_bucket
-from pathlib import Path
-from dotenv import load_dotenv
-from distutils.util import strtobool
-from lxml import etree
 import json
 import os
+from distutils.util import strtobool
+from pathlib import Path
+
+from dotenv import load_dotenv
+from lxml import etree
+
+from utils import create_path, get_s3_bucket
 
 NS = "{http://www.loc.gov/standards/alto/ns-v2#}"
 

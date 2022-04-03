@@ -1,12 +1,13 @@
-from utils import create_path
-from utils import get_s3_bucket
-from PIL import Image
-from distutils.util import strtobool
 import io
-import multiprocessing as mp
 import json
+import multiprocessing as mp
 import os
+from distutils.util import strtobool
+
 from dotenv import load_dotenv
+from PIL import Image
+
+from utils import create_path, get_s3_bucket
 
 load_dotenv()
 USE_AWS = strtobool(os.getenv("USE_AWS", "False"))

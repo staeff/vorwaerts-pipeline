@@ -1,11 +1,8 @@
 from lxml import etree
-from process_xml import generate_model_dict
-from process_xml import generate_page_fields
-from process_xml import get_page_dimensions
-from process_xml import get_adv_coords
-from process_xml import get_line_attributes
-from process_xml import extract_id
-from process_xml import NS
+
+from process_xml import (NS, extract_id, generate_model_dict,
+                         generate_page_fields, get_adv_coords,
+                         get_line_attributes, get_page_dimensions)
 
 XML_PAGE_COORDS = """
 <alto xmlns="http://www.loc.gov/standards/alto/ns-v2#">
