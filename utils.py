@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from distutils.util import strtobool
 import csv
 import shutil
+from zipfile import ZipFile
 
 load_dotenv()
 USE_AWS = strtobool(os.getenv("USE_AWS", "False"))
@@ -39,6 +40,16 @@ def rename_xml_files():
             # XXX Add logging here!
             shutil.move(source, target)
 
+def zip_output():
+    """Put result of the pipeline into a zip file"""
+    # zip file name
+    file = "output"
+    directory = "output"
+    # zipping the directory
+    shutil.make_archive(file, "zip", directory)
+    # print("Contents of the zip file:")
+    # with ZipFile(f"{file}.zip", 'r') as zip:
+    #     zip.printdir()
 
 def get_existing_buckets(s3):
     """Getting existing buckets from s3"""
@@ -96,6 +107,8 @@ if __name__ == "__main__":
         param = sys.argv[1]
     if param == "rename_xml_files":
         rename_xml_files()
+    if param == "zip_output":
+        zip_output()
     if USE_AWS and param == "check_s3":
         check_s3()
     if USE_AWS and param == "list_s3":

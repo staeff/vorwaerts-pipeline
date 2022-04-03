@@ -58,8 +58,12 @@ process_scans: ## Create thumbnail and smaller version of scanned page
 process_ads: ## Create images of single advertisments elements
 	$(PYTHON) process_ads.py
 
+.PHONY: zip_output
+zip_output: datafolder ## Put output content in a zip archive
+	$(PYTHON) utils.py zip_output
+
 .PHONY: pipeline
-pipeline: sourcedata/anzeigen.zip datafolder rename_xml_files check_s3 process_xml process_scans process_ads  ## run the data transformation
+pipeline: sourcedata/anzeigen.zip datafolder rename_xml_files check_s3 process_xml process_scans process_ads  zip_output  ## run the data transformation
 
 .PHONY: full-pipeline
 full-pipeline: setup pipeline  ## run the data transformation
@@ -72,3 +76,4 @@ tests: ## Run tests for python scripts
 clean: ## Remove material folder (scans and alto xml files)
 	rm -rf datafolder
 	rm -rf output
+	rm -rf output.zip
