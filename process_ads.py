@@ -33,6 +33,8 @@ def crop_image(img_obj, features):
 
 
 def save_image_s3(cropped, image_name, image_format):
+    # XXX Move bucket out and cache it
+    s3bucket = get_s3_bucket(AWS_AD_IMAGES_BUCKET)
     in_mem_img = io.BytesIO()
     cropped.save(in_mem_img, image_format)
     in_mem_img.seek(0)
@@ -78,9 +80,6 @@ if __name__ == "__main__":
 
     with open("output/json/advertisments.json", "r") as infile:
         data = json.load(infile)
-
-    if USE_AWS:
-        s3bucket = get_s3_bucket(AWS_AD_IMAGES_BUCKET)
 
     # Create folder for the images if needed
     create_path(f"output/images/ad_images")
