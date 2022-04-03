@@ -32,7 +32,7 @@ datafolder: sourcedata ## Unzip downloaded data and put into right folder struct
 
 .PHONY: rename_xml_files
 rename_xml_files: datafolder ## Rename xml files
-	$(PYTHON) rename_xml_files.py
+	$(PYTHON) utils.py rename_xml_files
 
 .PHONY: check_s3
 check_s3: ## Check if configured s3 already exist and create them if needed

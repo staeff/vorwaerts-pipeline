@@ -4,6 +4,8 @@ import os
 import sys
 from dotenv import load_dotenv
 from distutils.util import strtobool
+import csv
+import shutil
 
 load_dotenv()
 USE_AWS = strtobool(os.getenv("USE_AWS", "False"))
@@ -23,6 +25,19 @@ def create_path(path_name):
         print(f"Creating {dirname}")
         os.makedirs(dirname, exist_ok=True)
     return dirname
+
+def rename_xml_files():
+    """Align xml filename with image file name"""
+    with open('datafolder/metadaten.csv') as csv_file:
+        csv_reader = csv.reader(csv_file)
+        # Skip the first line
+        next(csv_reader)
+        for row in csv_reader:
+            name = Path(row[5])
+            target = 'datafolder/xml' / name.with_suffix('.xml')
+            source = Path(f'datafolder/xml/{row[6]}')
+            # XXX Add logging here!
+            shutil.move(source, target)
 
 
 def get_existing_buckets(s3):
@@ -79,6 +94,8 @@ def get_s3_bucket(bucket_name):
 if __name__ == "__main__":
     if len(sys.argv) == 2:
         param = sys.argv[1]
+    if param == "rename_xml_files":
+        rename_xml_files()
     if USE_AWS and param == "check_s3":
         check_s3()
     if USE_AWS and param == "list_s3":
