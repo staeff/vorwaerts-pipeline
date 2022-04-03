@@ -34,6 +34,18 @@ datafolder: sourcedata ## Unzip downloaded data and put into right folder struct
 rename_xml_files: datafolder ## Rename xml files
 	$(PYTHON) rename_xml_files.py
 
+.PHONY: check_s3
+check_s3: ## Check if configured s3 already exist and create them if needed
+	$(PYTHON) utils.py check_s3
+
+.PHONY: list_s3
+list_s3: ## List data from configured s3 buckets
+	$(PYTHON) utils.py list_s3
+
+.PHONY: delete_s3
+delete_s3: ## Delete configured s3 buckets
+	$(PYTHON) utils.py delete_s3
+
 .PHONY: process_xml
 process_xml: ## Extract data from ALTO xml to json
 	$(PYTHON) process_xml.py
@@ -47,7 +59,7 @@ process_ads: ## Create images of single advertisments elements
 	$(PYTHON) process_ads.py
 
 .PHONY: pipeline
-pipeline: sourcedata/anzeigen.zip datafolder rename_xml_files process_xml process_scans process_ads  ## run the data transformation
+pipeline: sourcedata/anzeigen.zip datafolder rename_xml_files check_s3 process_xml process_scans process_ads  ## run the data transformation
 
 .PHONY: full-pipeline
 full-pipeline: setup pipeline  ## run the data transformation
