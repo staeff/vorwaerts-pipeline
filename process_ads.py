@@ -1,6 +1,7 @@
 from utils import create_path
 from utils import get_s3_bucket
 from PIL import Image
+from distutils.util import strtobool
 import io
 import multiprocessing as mp
 import json
@@ -8,10 +9,11 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
+USE_AWS = strtobool(os.getenv("USE_AWS", "False"))
 AWS_AD_IMAGES_BUCKET = os.getenv("AWS_AD_IMAGES_BUCKET")
 
 
-def crop_image(img_obj, features, s3bucket):
+def crop_image(img_obj, features):
     """Extract the image by given coordinates
 
     feature is a dict.
@@ -23,11 +25,18 @@ def crop_image(img_obj, features, s3bucket):
     block_id = features["block_id"]
     image_name = f"{file_id}-{block_id}.jpg"
     image_path = f"output/images/ad_images/{image_name}"
+    image_format = img_obj.format
     cropped = img_obj.crop(features["coords"])
+    cropped.save(image_path, image_format)
+    if USE_AWS:
+        save_image_s3(cropped, image_name, image_format)
 
-    cropped.save(image_path, img_obj.format)
+
+def save_image_s3(cropped, image_name, image_format):
+    # XXX Move bucket out and cache it
+    s3bucket = get_s3_bucket(AWS_AD_IMAGES_BUCKET)
     in_mem_img = io.BytesIO()
-    cropped.save(in_mem_img, img_obj.format)
+    cropped.save(in_mem_img, image_format)
     in_mem_img.seek(0)
     s3msg = s3bucket.put_object(
         Key=image_name, Body=in_mem_img, ContentType="image/jpeg"
@@ -62,11 +71,9 @@ def process_entry(entry):
         "file_id": file_id,
     }
 
-    s3bucket = get_s3_bucket(AWS_AD_IMAGES_BUCKET)
-
     # Turn original image into a PIL obj
     img_obj = Image.open(f"datafolder/images/{file_id}.jpg")
-    crop_image(img_obj, features, s3bucket)
+    crop_image(img_obj, features)
 
 
 if __name__ == "__main__":

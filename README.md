@@ -5,15 +5,22 @@ The idea of the project has been developed during the [{COD1NG DA V1NC1} NIEDER.
 
 ## Usage
 
-Run `make full-pipeline` to setup the Python dependencies for the project, download the data and process it.
+*The original data is 964 MB! Downloading and processing will take some time. If you want to just test the pipeline, load a smaller data set with this command:*
 
-*The original data is 964 MB! Downloading and processing will take some time. For just trying out the workflow replace `https://download.codingdavinci.de/s/7rTJnf5dP3nKJYp/download` with `https://220402irzzlazozxplo.nextcloud.hosting.zone/s/qYb7LRyrXGWMDkp/download/anzeigen-demo.zip` in line 24 of the `Makefile`.*
+```sh
+$ mkdir -p sourcedata
+$ curl https://220402irzzlazozxplo.nextcloud.hosting.zone/s/qYb7LRyrXGWMDkp/download/anzeigen-demo.zip -o sourcedata/anzeigen.zip
+```
 
-The result is uploaded to Amazon s3 for the web app to read it from there.
+*The pipeline can upload the result of the process to AWS S3. This requires that an aws account is [set up](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html#configuration) to work with `boto3`. Additionally configure the bucket names in an `.env`. See `example.env` for information.*
 
-*For this requires a working aws configuration in the environment it is executed and the bucket-names set up in `.env`.*
+Than you are ready to run:
 
-Additionally the pipeline creates a `output.zip` file, that can be extracted to local installation of the web app for developement.
+```
+$ make full-pipeline
+```
+
+This sets up the Python dependencies, downloads the data and processes it. The pipeline creates a file `output.zip`, that can be extracted to local installation of the [web app](https://github.com/staeff/vorwaerts-gallery) for development. If configured, the data is also uploaded to AWS S3. The web app can be configured to read the data from S3.
 
 Use `make help` to see which single command have been implemented and run then as necessary.
 
@@ -37,5 +44,5 @@ graph TD
 1) The 964 MB original data file is downloaded the first time this command is run, but stored and re-used for consecutive runs
 2) The original data structure needs to be cleaned up for further processing, e.g. renaming `xml` file to match with their corresponding image files.
 3) This produces a `json` file, that can be directly read into to database of the web app (written in Django)
-4) Simple resizing of the high resolution images for web purposes and uploading to s3
-5) Extracting of subimages using coordinate data from the `json` and uploading to s3
+4) Simple resizing of the high resolution images for web purposes, save them locally and optionally upload to s3
+5) Extracting of subimages using coordinate data from the `json`, save save them locally and optionally upload to s3

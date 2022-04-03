@@ -2,6 +2,7 @@ from utils import create_path
 from utils import get_s3_bucket
 from pathlib import Path
 from dotenv import load_dotenv
+from distutils.util import strtobool
 from lxml import etree
 import json
 import os
@@ -9,11 +10,14 @@ import os
 NS = "{http://www.loc.gov/standards/alto/ns-v2#}"
 
 load_dotenv()
-AWS_DATA_BUCKET = os.getenv('AWS_DATA_BUCKET')
+AWS_DATA_BUCKET = os.getenv("AWS_DATA_BUCKET")
+USE_AWS = strtobool(os.getenv("USE_AWS", "False"))
+
 
 def generate_model_dict(i, model):
     """Generate a dictionary with that represents a minimal page instance"""
     return dict(model=model, pk=i)
+
 
 def generate_page_fields(file_id_string):
     """Generate the fields attribute for a page"""
@@ -22,18 +26,20 @@ def generate_page_fields(file_id_string):
         "file_id": file_id_string,
         "publish_date": f"{year}-{month}-{day}",
         "issue_number": int(issue_number),
-        "page_number": int(page_number)
+        "page_number": int(page_number),
     }
     return fields
+
 
 def get_page_dimensions(tree, NS):
     """Get the height and width of a complete page."""
     page_elem = tree.find(f".//{NS}Page")
     dimensions = {
-        'height': page_elem.attrib['HEIGHT'],
-        'width': page_elem.attrib['WIDTH']
+        "height": page_elem.attrib["HEIGHT"],
+        "width": page_elem.attrib["WIDTH"],
     }
     return dimensions
+
 
 def get_adv_coords(item_attrs):
     """Gets a block node, either TextBlock
@@ -44,47 +50,47 @@ def get_adv_coords(item_attrs):
         "x": int(item_attrs["HPOS"]),
         "y": int(item_attrs["VPOS"]),
         "width": int(item_attrs["WIDTH"]),
-        "height": int(item_attrs["HEIGHT"])
+        "height": int(item_attrs["HEIGHT"]),
     }
     return adv_coords
+
 
 def get_word(entry):
     """Get the word contents of a String entry"""
     # Check whether we have a hyphenated word. The full word
     # is stored in SUBS_CONTENT
-    text = ''
-    if 'SUBS_TYPE' in entry.attrib and 'HypPart1' in entry.attrib.get('SUBS_TYPE'):
+    text = ""
+    if "SUBS_TYPE" in entry.attrib and "HypPart1" in entry.attrib.get("SUBS_TYPE"):
         text = f"{entry.attrib.get('SUBS_CONTENT')} "
-    if 'SUBS_CONTENT' not in entry.attrib and 'SUBS_TYPE' not in entry.attrib:
+    if "SUBS_CONTENT" not in entry.attrib and "SUBS_TYPE" not in entry.attrib:
         text = f"{entry.attrib.get('CONTENT')} "
     return text
+
 
 def get_word_confidence(entry):
     """Get the value of the attribute WC as float
 
-        Wc - word confidence. Value assigned by Abby OCR
-        measuring the quality of the recognition.
+    Wc - word confidence. Value assigned by Abby OCR
+    measuring the quality of the recognition.
     """
-    return float(entry.attrib.get('WC'))
+    return float(entry.attrib.get("WC"))
+
 
 def get_line_attributes(xml_node, NS):
-    """Get the text of an advertisement
-    """
-    words = ''
+    """Get the text of an advertisement"""
+    words = ""
     ocr_confidence = 0
 
-    string_entries = xml_node.findall(f'.//{NS}TextLine/{NS}String')
+    string_entries = xml_node.findall(f".//{NS}TextLine/{NS}String")
     for entry in string_entries:
         words += get_word(entry)
         ocr_confidence += get_word_confidence(entry)
 
-    ocr_confidence = ocr_confidence/len(string_entries)
+    ocr_confidence = ocr_confidence / len(string_entries)
 
-    line_attributes = {
-        "text": words.strip(),
-        'ocr_confidence': ocr_confidence
-    }
+    line_attributes = {"text": words.strip(), "ocr_confidence": ocr_confidence}
     return line_attributes
+
 
 def extract_id(block_id_string):
     """Gets something block id string like Page1_Block1
@@ -92,6 +98,7 @@ def extract_id(block_id_string):
     is removed.
     """
     return block_id_string.replace("Page1_Block", "")
+
 
 if __name__ == "__main__":
     cwd = Path(".")
@@ -109,12 +116,12 @@ if __name__ == "__main__":
         file_id_string = xml_file.stem
 
         # Generate dict with page
-        page_dict = generate_model_dict(i, 'vorwaerts.newspaperpage')
+        page_dict = generate_model_dict(i, "vorwaerts.newspaperpage")
         fields_dict = generate_page_fields(file_id_string)
         coords_dict = get_page_dimensions(tree, NS)
         # Merge fields and coords dict
         fields = {**fields_dict, **coords_dict}
-        page_dict['fields'] = fields
+        page_dict["fields"] = fields
         fixture.append(page_dict)
 
         textblocks = tree.findall(f".//{NS}TextBlock")
@@ -123,7 +130,7 @@ if __name__ == "__main__":
         for block in textblocks:
             # Increment numerical ID for an ad
             ad_id += 1
-            ad_dict = generate_model_dict(ad_id, 'vorwaerts.classifiedad')
+            ad_dict = generate_model_dict(ad_id, "vorwaerts.classifiedad")
             # Assign nodes attributes dict to a var
             item_attrs = block.attrib
 
@@ -133,19 +140,20 @@ if __name__ == "__main__":
             ad_fields = get_adv_coords(item_attrs)
             ad_fields["block_id"] = extract_id(block_id_string)
             ad_fields["file_id"] = file_id_string
-            ad_fields["text"] = line_attributes['text']
-            ad_fields['ocr_confidence'] = line_attributes['ocr_confidence']
+            ad_fields["text"] = line_attributes["text"]
+            ad_fields["ocr_confidence"] = line_attributes["ocr_confidence"]
             ad_fields["newspaper_page"] = i
-            ad_dict['fields'] = ad_fields
+            ad_dict["fields"] = ad_fields
             anzeigen.append(ad_dict)
 
     # Store data on s3 for the web app to pick it up
-    s3bucket = get_s3_bucket(AWS_DATA_BUCKET)
-    s3bucket.put_object(Key='vorwaerts_ads_data.json', Body=json.dumps(anzeigen))
-    s3bucket.put_object(Key='vorwaerts_pages_data.json', Body=json.dumps(fixture))
+    if USE_AWS:
+        s3bucket = get_s3_bucket(AWS_DATA_BUCKET)
+        s3bucket.put_object(Key="vorwaerts_ads_data.json", Body=json.dumps(anzeigen))
+        s3bucket.put_object(Key="vorwaerts_pages_data.json", Body=json.dumps(fixture))
 
     # store data locally
-    outpath = create_path('output/json')
+    outpath = create_path("output/json")
     with open(f"{outpath}/pages.json", "w") as outfile:
         json.dump(fixture, outfile)
 
